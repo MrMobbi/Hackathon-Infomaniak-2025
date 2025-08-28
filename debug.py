@@ -14,11 +14,9 @@ def fastapi():
         "api.main:app",
         host="127.0.0.1",
         port=8000,
-        log_level="info",
-        access_log=False,
+        log_level="debug",
         log_config="./logging.yaml",
         reload_dirs=["./api", "./common"],  # Add all relevant dirs
-        workers=4,
         reload=True,
     )
 

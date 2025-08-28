@@ -40,7 +40,7 @@ Verification:""")
 event_client = client_from_config(model="qwen3", temprature=0.12, max_tokens=5000)
 event_chain = EVENT_PROMPT | event_client.with_structured_output(EventResponse)
 
-validation_prompt = client_from_config(model="mistral3", temprature=0.3, max_tokens=5000)
+validation_prompt = client_from_config(model="mistral3", temprature=0.13, max_tokens=5000)
 validation_chain = VALIDATION_PROMPT | validation_prompt
 
 
