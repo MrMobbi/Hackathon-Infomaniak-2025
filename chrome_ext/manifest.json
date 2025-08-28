@@ -19,15 +19,17 @@
     "activeTab",
     "scripting",
     "webRequest",
+    "tabs",
     "storage"
   ],
   "host_permissions": [
-    "https://mail.infomaniak.com/",
-    "https://ksuite.infomaniak.com/",
-    "http://localhost:8000/"
+    "https://mail.infomaniak.com/*",
+    "https://ksuite.infomaniak.com/*",
+    "http://localhost:8000/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
