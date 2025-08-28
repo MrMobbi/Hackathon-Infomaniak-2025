@@ -37,10 +37,10 @@ AI extraction: {answer}
 Verification:""")
     ])
 
-event_client = client_from_config(model_name="mistral3", temprature=0.12, max_tokens=5000)
-event_chain = EVENT_PROMPT | event_client
+event_client = client_from_config(model="qwen3", temprature=0.12, max_tokens=5000)
+event_chain = EVENT_PROMPT | event_client.with_structured_output(EventResponse)
 
-validation_prompt = client_from_config(model_name="qwen3", temprature=0.3, max_tokens=5000)
+validation_prompt = client_from_config(model="mistral3", temprature=0.3, max_tokens=5000)
 validation_chain = VALIDATION_PROMPT | validation_prompt
 
 
@@ -104,7 +104,7 @@ async def event_suggestion(
         wrong_emails = [email for email in result.emails if email not in emails]
         result.emails = valid_emails
         logger.info(f"The following e-mails have been hallucinated and removed: {wrong_emails}")
-    validation_result = validation_chain.chain.invoke(
+    validation_result = validation_chain.invoke(
             {"answer": result, "text": text}
             )
     return EventResponse.correct_json(validation_result, result)

@@ -11,7 +11,7 @@ from common.constants import IK_ACCESS_TOKEN, IK_API_URL, IK_PRODUCT_ID
 def get_langchain_openai_client() -> ChatOpenAI:
     logging.debug("Initializing Langchain OpenAI client")
     return ChatOpenAI(
-            openai_api_base=f"{IK_API_URL}/{IK_PRODUCT_ID}/openai",
+            openai_api_base=f"{IK_API_URL}/2/ai/{IK_PRODUCT_ID}/openai/v1",
             openai_api_key=IK_ACCESS_TOKEN,
             ).configurable_fields(
             temperature=ConfigurableField(
