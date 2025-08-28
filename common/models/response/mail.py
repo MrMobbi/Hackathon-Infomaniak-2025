@@ -26,6 +26,27 @@ class EventResponse(BaseModel):
                                       description="Boolean indicating if the event should last the entire day.", )
 
     @classmethod
+    def _parse_duration(cls, duration_value, fallback_duration):
+        """Parse duration value with default fallback to 60 minutes (1 hour)."""
+        if duration_value is None:
+            return fallback_duration if fallback_duration is not None else 60
+
+        try:
+            # Extract digits from the duration value
+            duration_str = "".join(filter(str.isdigit, str(duration_value)))
+            if not duration_str:
+                return 60  # Default to 1 hour if no digits found
+
+            duration_int = int(duration_str)
+            # Validate that duration is reasonable (between 1 minute and 24 hours)
+            if duration_int < 1 or duration_int > 1440:
+                return 60  # Default to 1 hour for invalid ranges
+
+            return duration_int
+        except (ValueError, TypeError):
+            return 60  # Default to 1 hour for any parsing errors
+
+    @classmethod
     def correct_json(cls, validator_string: AIMessage, first_answer: "EventResponse"):
         if "```valid```" in validator_string.content.lower():
             return first_answer
@@ -47,7 +68,7 @@ class EventResponse(BaseModel):
                        description=data.get("description", first_answer.description),
                        date=data.get("date", first_answer.date),
                        start_time=data.get("start_time", first_answer.start_time),
-                       duration=int("".join(filter(str.isdigit, str(data.get("duration", first_answer.duration)), ))),
+                       duration=cls._parse_duration(data.get("duration"), first_answer.duration),
                        whole_day=data.get("whole_day", first_answer.whole_day), )
         except (json.JSONDecodeError, AttributeError, KeyError, TypeError, ValidationError,) as e:
             # If JSON is invalid or missing required fields, return the first_answer
