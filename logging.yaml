@@ -1,30 +1,79 @@
 version: 1
-disable_existing_loggers: true
+# Keep third‑party loggers (FastAPI, uvicorn internals) unless we explicitly override them
+disable_existing_loggers: false
+
 formatters:
-  precise:
-    format: "[%(asctime)s.%(msecs)03d %(levelname)8s function=%(funcName)-12.12s L%(lineno)04d file=%(filename)-12.12s] %(message)s"
+  app_precise:
+    format: "[%(asctime)s.%(msecs)03d %(levelname)8s name=%(name)s func=%(funcName)s L%(lineno)04d file=%(filename)s] %(message)s"
+    datefmt: "%Y-%m-%dT%H:%M:%S"
+  access:
+    # Fields provided by uvicorn.access: client_addr, request_line, status_code
+    format: "[%(asctime)s.%(msecs)03d %(levelname)8s name=uvicorn.access] %(client_addr)s - \"%(request_line)s\" %(status_code)s"
+    datefmt: "%Y-%m-%dT%H:%M:%S"
+  error_brief:
+    format: "[%(asctime)s.%(msecs)03d %(levelname)8s name=%(name)s] %(message)s"
     datefmt: "%Y-%m-%dT%H:%M:%S"
 
 handlers:
-  console:
+  # Console handlers
+  console_app:
     class: logging.StreamHandler
-    formatter: precise
-  file_handler:
+    level: INFO
+    formatter: app_precise
+  console_access:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: access
+  console_error:
+    class: logging.StreamHandler
+    level: WARNING
+    formatter: error_brief
+
+  # Rotating file handlers (10 MB x 5)
+  app_file:
     class: logging.handlers.RotatingFileHandler
-    formatter: precise
+    level: INFO
+    formatter: app_precise
     encoding: utf-8
-    filename: uvicorn_log.log
-    maxBytes: 10485760 # 10 MB
+    filename: app.log
+    maxBytes: 10485760
     backupCount: 5
+
+  access_file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: access
+    encoding: utf-8
+    filename: access.log
+    maxBytes: 10485760
+    backupCount: 5
+
+  error_file:
+    class: logging.handlers.RotatingFileHandler
+    level: WARNING
+    formatter: error_brief
+    encoding: utf-8
+    filename: error.log
+    maxBytes: 10485760
+    backupCount: 5
+
 loggers:
-  '':
-    handlers: [console, file_handler]
-    propagate: true
+  # Application/root logger: your code, libraries, FastAPI
+  "":  # root
+    level: INFO
+    handlers: [console_app, app_file]
+    propagate: false
+
+  # Uvicorn server errors, tracebacks, startup/shutdown
   uvicorn.error:
-    handlers: [console, file_handler]
-    propagate: true
+    level: INFO
+    handlers: [console_error, error_file]
+    propagate: false
     qualname: uvicorn.error
+
+  # HTTP access logs (one line per request)
   uvicorn.access:
-    handlers: [console, file_handler]
-    propagate: true
+    level: INFO
+    handlers: [console_access, access_file]
+    propagate: false
     qualname: uvicorn.access

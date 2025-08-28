@@ -11,7 +11,7 @@ from models.request.mail import MailEventSuggestionRequest
 from models.response.mail import EventResponse
 from openai_clients import client_from_config
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
         tags=["mail"],
@@ -68,6 +68,7 @@ async def event_suggestion(
     Returns:
 
     """
+    logger.info(f"Request for mailbox uuid: {mailbox_uuid}")
     mails = await get_mail(request.context_message_uid, ik_api, mailbox_uuid)
     email_sep = "\n---------------------------------------\n"
     text = ""
