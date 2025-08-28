@@ -1,4 +1,4 @@
-# Hackathon Starter Repo — Final Documentation
+# Hackathon Starter Repo
 
 This guide helps you get productive quickly during the hackathon. It covers:
 - Installing and using uv (the Python package/environment manager used in this repo)
