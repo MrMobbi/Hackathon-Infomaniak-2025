@@ -6,6 +6,8 @@ This guide helps you get productive quickly during the hackathon. It covers:
 - Building and running with Docker
 - Loading the Chrome extension in Developer Mode
 
+We make tutorial video to explain how to use this repo: [HERE](https://kdrive.infomaniak.com/app/share/100338/79e7f715-8efb-4475-b6df-ca2024b36ab7)
+
 ---
 
 ## Prerequisites
