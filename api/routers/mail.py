@@ -29,7 +29,7 @@ Instructions for each field:
 * 'title': take the value from the 'Subject' field of the email.
 * 'message': small resume of what the mail is about.
 * 'category': classify the email as one of 'work', 'social', or 'spam'.
-* 'urgency_score': integer from 0 to 100 indicating how urgent it is to answer.
+* 'urgency_score': integer from 0 to 10000 indicating how urgent it is to answer.
 
 The JSON output must strictly follow this schema. Do not add extra text outside the JSON object.
 """),
