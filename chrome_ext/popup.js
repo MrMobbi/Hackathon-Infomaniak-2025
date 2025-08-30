@@ -10,6 +10,8 @@ const saveButton = document.getElementById("saveTokenButton");
 const contentOutput = document.getElementById("content");
 const urlsOutput = document.getElementById("urls");
 const showContentButton = document.getElementById("showContent");
+const callApiButton = document.getElementById("callApiButton");
+const contentAPI = document.getElementById("contentAPI");
 
 // ---- Token persistence ----
 async function loadSavedToken() {
@@ -89,7 +91,20 @@ async function fetchAndDisplayMessageContent() {
     }
 }
 
+async function callBackendApi() {
+    await fetchAndDisplayMessageContent();
+    const response = await fetch(`http://127.0.0.1:8000${document.getElementById('urls').innerHTML}`, {
+        method:"POST", 
+        body:document.getElementById('content').innerHTML, 
+        headers:{
+            Authorization: `Bearer DMKxaBNdygM52ks4B5jQvfjhmpeRSsmd3_rhvT6dGGDJ-k4GeOPxFqN5ayZ_nogL7bsTQHB-czDQif77`,
+            "Content-Type": "application/json"
+        },
+    });
+    contentAPI.innerHTML = JSON.stringify(await response.json());
+}
+
 // ---- Event Listeners ----
 document.addEventListener("DOMContentLoaded", loadSavedToken, {once: true});
 saveButton.addEventListener("click", () => void saveApiToken());
-showContentButton.addEventListener("click", () => void fetchAndDisplayMessageContent());
+callApiButton.addEventListener("click", () => callBackendApi());

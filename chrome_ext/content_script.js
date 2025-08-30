@@ -19,7 +19,6 @@
         <span class="mat-button-focus-overlay"></span>
       </button>
     `,
-        calendarBaseUrl: "https://calendar.infomaniak.com/create",
         mailPattern: /mail-(\d+)@([a-zA-Z0-9-]+)/g,
         targetSelector: "div.mailContent-open-footer.ng-star-inserted",
         messageItemSelector: "div.message-item",
