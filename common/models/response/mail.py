@@ -17,13 +17,9 @@ class EventResponse(BaseModel):
     emails: List[str] = Field(..., description=(
         "List of relevant participants e-mails found in the 'From' and 'To' fields before every e-mail content"), )
     title: str = Field(..., description="Title of the event based on the objectives described in the conversation", )
-    description: str = Field(..., description="Short description of the event objective")
-    date: str = Field(..., description="Date of the event formatted as YYYY-MM-DD")
-    # Provide default values for the validation model to get the format if the first model dont find the value
-    start_time: Optional[str] = Field(default="10:00", description="Start time of the event formatted as HH:MM")
-    duration: Optional[int] = Field(default=60, description="Duration of the event in minutes")
-    whole_day: Optional[bool] = Field(default=False,
-                                      description="Boolean indicating if the event should last the entire day.", )
+    message: str = Field(..., description="the message of the email")
+    category: str = Field(..., description="What is the mail about")
+    urgency_score: int = Field(..., description="Range of how the message is urgent to answer")
 
     @classmethod
     def _parse_duration(cls, duration_value, fallback_duration):
@@ -65,11 +61,10 @@ class EventResponse(BaseModel):
 
             # Create a new instance with values from the JSON or fallback to first_answer
             return cls(emails=data.get("emails", first_answer.emails), title=data.get("title", first_answer.title),
-                       description=data.get("description", first_answer.description),
-                       date=data.get("date", first_answer.date),
-                       start_time=data.get("start_time", first_answer.start_time),
-                       duration=cls._parse_duration(data.get("duration"), first_answer.duration),
-                       whole_day=data.get("whole_day", first_answer.whole_day), )
+                       message=data.get("message", first_answer.message),
+                       category=data.get("category", first_answer.category),
+                       urgency_score=data.get("urgency_score", first_answer.urgency_score),
+                       )
         except (json.JSONDecodeError, AttributeError, KeyError, TypeError, ValidationError,) as e:
             # If JSON is invalid or missing required fields, return the first_answer
             logger.error(f"Error parsing JSON: {e}. Using fallback values.")
