@@ -18,11 +18,11 @@ router = APIRouter(
         )
 
 EVENT_PROMPT = ChatPromptTemplate([
-    ("system", """ .
+    ("system", """
 You are an efficient and straight-to-the-point assistant that analyzes emails and prepares structured event information.
 You will read the following email (including headers) and extract relevant information.
 You need to determinate if the mail is about work or if it about social and if it is urgent to response to this message.
-If it is an email worth tracking, output a JSON-formatted string containing the following fields matching the EventResponse model: 'emails', 'title', 'message', 'category', 'urgency_score'.
+If it is an email worth tracking, output a JSON-formatted string containing the following fields matching the EventResponse model: 'emails', 'title', 'message', 'category', 'urgency_score', 'locations', 'persons'.
 
 Instructions for each field:
 * 'emails': list of participant emails found in the 'From' and 'To' fields of the email headers.
@@ -30,6 +30,8 @@ Instructions for each field:
 * 'message': small resume of what the mail is about.
 * 'category': classify the email as one of 'work' | 'social' | 'spam' | 'newsletter'.
 * 'urgency_score': integer from 0 to 10000 indicating how urgent it is to answer.
+* 'locations': a list of any place or location mentioned in the message. If there are none, leave the list empty.
+* 'persons': a list of any person mentioned in the message. If there are none, leave the list empty.
 
 The JSON output must strictly follow this schema. Do not add extra text outside the JSON object.
 """),

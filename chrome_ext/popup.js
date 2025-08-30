@@ -97,7 +97,7 @@ async function callBackendApi() {
         method:"POST", 
         body:document.getElementById('content').innerHTML, 
         headers:{
-            Authorization: `Bearer DMKxaBNdygM52ks4B5jQvfjhmpeRSsmd3_rhvT6dGGDJ-k4GeOPxFqN5ayZ_nogL7bsTQHB-czDQif77`,
+            Authorization: `Bearer XX`,
             "Content-Type": "application/json"
         },
     });

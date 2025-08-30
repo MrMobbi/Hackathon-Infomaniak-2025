@@ -20,6 +20,8 @@ class EventResponse(BaseModel):
     message: str = Field(..., description="the message of the email")
     category: str = Field(..., description="What is the mail about")
     urgency_score: int = Field(..., description="Range of how the message is urgent to answer")
+    places: str = Field(..., description= "Locations mentioned in the mail" )
+    persons: str = Field(..., description="Names mentioned in the mail")
 
     @classmethod
     def _parse_duration(cls, duration_value, fallback_duration):
