@@ -99,7 +99,7 @@ function getUrgencyTag(score) {
 
 function renderMails(data) {
     const mailList = document.getElementById("mailList");
-    mailList.innerHTML = ""; // clear previous
+    mailList.innerHTML = "";
 
     if (!data.emails || data.emails.length === 0) {
         mailList.textContent = "No emails found.";
@@ -114,7 +114,7 @@ function renderMails(data) {
         spam: "tag-spam",
     }[category] || "tag-uncategorized";
 
-    const email = data.emails[0];
+    const sender = data.sender;
     const urgency = getUrgencyTag(data.urgency_score || 0);
 
     const mailItem = document.createElement("div");
@@ -122,7 +122,7 @@ function renderMails(data) {
 
     const mailText = document.createElement("span");
     mailText.className = "mail-text";
-    mailText.textContent = email;
+    mailText.textContent = sender;
 
     const mailTag = document.createElement("span");
     mailTag.className = `mail-tag ${tagClass}`;
@@ -134,7 +134,28 @@ function renderMails(data) {
 
     mailItem.appendChild(mailText);
     mailItem.appendChild(mailTag);
-    mailItem.appendChild(urgencyTag);
+
+    if (category !== "spam") {
+        const urgency = getUrgencyTag(data.urgency_score || 0);
+        const urgencyTag = document.createElement("span");
+        urgencyTag.className = `mail-urgency ${urgency.className}`;
+        urgencyTag.textContent = `${urgency.label}`;
+        mailItem.appendChild(urgencyTag);
+
+        if (data.places && data.places.trim() !== "") {
+            const locationTag = document.createElement("span");
+            locationTag.className = "mail-location";
+            locationTag.textContent = "Location";
+
+            // Tooltip container
+            const tooltip = document.createElement("span");
+            tooltip.className = "tooltip-text";
+            tooltip.textContent = data.places;
+
+            locationTag.appendChild(tooltip);
+            mailItem.appendChild(locationTag);
+        }
+    }
 
     mailList.appendChild(mailItem);
 }

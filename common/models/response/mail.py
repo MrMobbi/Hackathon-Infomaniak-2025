@@ -16,8 +16,7 @@ class EventResponse(BaseModel):
 
     emails: List[str] = Field(..., description=(
         "List of relevant participants e-mails found in the 'From' and 'To' fields before every e-mail content"), )
-    title: str = Field(..., description="Title of the event based on the objectives described in the conversation", )
-    message: str = Field(..., description="the message of the email")
+    sender: str = Field(..., description="sender of the mail, person or company")
     category: str = Field(..., description="What is the mail about")
     urgency_score: int = Field(..., description="Range of how the message is urgent to answer")
     places: str = Field(..., description= "Locations mentioned in the mail" )
@@ -62,12 +61,12 @@ class EventResponse(BaseModel):
             data = json.loads(cleaned_json)
 
             # Create a new instance with values from the JSON or fallback to first_answer
-            return cls(emails=data.get("emails", first_answer.emails), title=data.get("title", first_answer.title),
-                       message=data.get("message", first_answer.message),
+            return cls(emails=data.get("emails", first_answer.emails),
+                       sender=data.get("sender", first_answer.sender),
                        category=data.get("category", first_answer.category),
                        urgency_score=data.get("urgency_score", first_answer.urgency_score),
                        places=data.get("places", first_answer.places),
-                       persons=data.get("places", first_answer.persons) 
+                       persons=data.get("places", first_answer.persons)
                        )
         except (json.JSONDecodeError, AttributeError, KeyError, TypeError, ValidationError,) as e:
             # If JSON is invalid or missing required fields, return the first_answer

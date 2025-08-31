@@ -20,14 +20,17 @@ router = APIRouter(
 EVENT_PROMPT = ChatPromptTemplate([
     ("system", """
 You are an efficient and straight-to-the-point assistant that analyzes emails and prepares structured event information.
-You will read the following email (including headers) and extract relevant information.
-You need to determinate if the mail is about work or if it about social and if it is urgent to response to this message.
-If it is an email worth tracking, output a JSON-formatted string containing the following fields matching the EventResponse model: 'emails', 'title', 'message', 'category', 'urgency_score', 'locations', 'persons'.
+- email : You will read the following email (including headers) and extract relevant information.
+
+- category: You need to determinate if the mail the category of the mail. Like if the mail is about work, social, newsletter, spam.
+
+- urgency_scoreYou will need to determinate the urgency of the mail if it's an import mail to response ASAP or not.
+
+output a JSON-formatted string containing the following fields matching the EventResponse model: 'emails', 'sender', 'category', 'urgency_score', 'locations', 'persons'.
 
 Instructions for each field:
 * 'emails': list of participant emails found in the 'From' and 'To' fields of the email headers.
-* 'title': take the value from the 'Subject' field of the email.
-* 'message': small resume of what the mail is about.
+* 'sender': name of the person or company that send the mail
 * 'category': classify the email as one of 'work' | 'social' | 'spam' | 'newsletter'.
 * 'urgency_score': integer from 0 to 10000 indicating how urgent it is to answer.
 * 'locations': a list of any place or location mentioned in the message. If there are none, leave the list empty.
@@ -39,19 +42,8 @@ The JSON output must strictly follow this schema. Do not add extra text outside 
 JSON-formatted calendar invitation:""")
     ])
 
-VALIDATION_PROMPT = ChatPromptTemplate([
-    "system",
-    "You are a calendar event validator. Check if the AI's extracted event information is accurate. Return ```valid``` if correct. If incorrect, provide rectification as JSON between ```json``` tags.",
-    ("human", """Email: {text}
-AI extraction: {answer}
-Verification:""")
-    ])
-
 event_client = client_from_config(model="qwen3", temprature=0.12, max_tokens=5000)
 event_chain = EVENT_PROMPT | event_client.with_structured_output(EventResponse)
-
-validation_prompt = client_from_config(model="mistral3", temprature=0.13, max_tokens=5000)
-validation_chain = VALIDATION_PROMPT | validation_prompt
 
 
 @router.post(
@@ -109,13 +101,6 @@ async def event_suggestion(
             {"emails": ", ".join(emails), "text": text}
             )
 
-    # Validate output
     valid_emails = [email for email in result.emails if email in emails]
-    if len(result.emails) != len(valid_emails):
-        wrong_emails = [email for email in result.emails if email not in emails]
-        result.emails = valid_emails
-        logger.info(f"The following e-mails have been hallucinated and removed: {wrong_emails}")
-    validation_result = validation_chain.invoke(
-            {"answer": result, "text": text}
-            )
-    return EventResponse.correct_json(validation_result, result)
+    result.emails = valid_emails
+    return result
