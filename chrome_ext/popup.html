@@ -7,6 +7,7 @@
             font-family: Arial, sans-serif;
             padding: 20px;
             width: 580px; /* Adjust width to fit within the popup */
+            font-size: 16px;
         }
 
         #content {
@@ -41,6 +42,74 @@
             background-color: #f9f9f9;
             width: 100%; /* Ensure it takes full width of the body */
         }
+        .mail-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+        }
+
+        .mail-text {
+            font-weight: bold;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .mail-tag {
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 20px;
+            text-transform: capitalize;
+        }
+
+        /* Category-specific colors */
+        .tag-work {
+            background-color: #007bff; /* blue */
+        }
+        .tag-social {
+            background-color: #28a745; /* green */
+        }
+        .tag-newsletter {
+            background-color: #6f42c1; /* purple */
+        }
+        .tag-spam {
+            background-color: #dc3545; /* red */
+        }
+
+        /* fallback */
+        .tag-uncategorized {
+            background-color: #6c757d; /* gray */
+        }
+
+        .mail-urgency {
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 20px;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .urgency-low {
+            background-color: #28a745; /* green */
+        }
+        .urgency-medium {
+            background-color: #fd7e14; /* orange */
+        }
+        .urgency-high {
+            background-color: #dc3545; /* red */
+        }
+        .urgency-critical {
+            background-color: #b21f1f; /* dark red */
+        }
+
     </style>
 </head>
 <body>
@@ -69,6 +138,10 @@
     <h3>API payload</h3>
     <pre id="contentAPI"></pre>
     <br>
+
+    <h3>Mails</h3>
+    <div id="mailList"></div>
+
 
     <script type="module" src="popup.js"></script>
 </body>
