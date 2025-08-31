@@ -66,6 +66,8 @@ class EventResponse(BaseModel):
                        message=data.get("message", first_answer.message),
                        category=data.get("category", first_answer.category),
                        urgency_score=data.get("urgency_score", first_answer.urgency_score),
+                       places=data.get("places", first_answer.places),
+                       persons=data.get("places", first_answer.persons) 
                        )
         except (json.JSONDecodeError, AttributeError, KeyError, TypeError, ValidationError,) as e:
             # If JSON is invalid or missing required fields, return the first_answer
