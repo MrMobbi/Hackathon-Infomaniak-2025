@@ -21,7 +21,7 @@ app = FastAPI(
 
 # CORS configuration
 origins = [
-    "chrome-extension://fjdneaemcpaidlilcibpjoeeledeglcd",  # Replace with your actual Chrome extension ID
+    "chrome-extension://fjdneaemcpaidlilcibpjoeeledeglcd",
     "http://127.0.0.1",  # Allow localhost if needed
     "http://localhost:8000",  # Add other origins if needed
 ]

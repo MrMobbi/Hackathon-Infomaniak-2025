@@ -9,7 +9,6 @@ const tokenInput = document.getElementById("tokenInput");
 const saveButton = document.getElementById("saveTokenButton");
 const contentOutput = document.getElementById("content");
 const urlsOutput = document.getElementById("urls");
-const showContentButton = document.getElementById("showContent");
 const callApiButton = document.getElementById("callApiButton");
 const contentAPI = document.getElementById("contentAPI");
 
@@ -91,18 +90,86 @@ async function fetchAndDisplayMessageContent() {
     }
 }
 
+function getUrgencyTag(score) {
+    if (score >= 8000) return { label: "Critical", className: "urgency-critical"};
+    if (score >= 6000) return { label: "High", className: "urgency-high"};
+    if (score >= 4000) return { label: "Medium", className: "urgency-medium"};
+    return { label: "Low", className: "urgency-low"};
+}
+
+function renderMails(data) {
+    const mailList = document.getElementById("mailList");
+    mailList.innerHTML = ""; // clear previous
+
+    if (!data.emails || data.emails.length === 0) {
+        mailList.textContent = "No emails found.";
+        return;
+    }
+
+    const category = (data.category || "uncategorized").toLowerCase();
+    const tagClass = {
+        work: "tag-work",
+        social: "tag-social",
+        newsletter: "tag-newsletter",
+        spam: "tag-spam",
+    }[category] || "tag-uncategorized";
+
+    const email = data.emails[0];
+    const urgency = getUrgencyTag(data.urgency_score || 0);
+
+    const mailItem = document.createElement("div");
+    mailItem.className = "mail-item";
+
+    const mailText = document.createElement("span");
+    mailText.className = "mail-text";
+    mailText.textContent = email;
+
+    const mailTag = document.createElement("span");
+    mailTag.className = `mail-tag ${tagClass}`;
+    mailTag.textContent = category;
+
+    const urgencyTag = document.createElement("span");
+    urgencyTag.className = `mail-urgency ${urgency.className}`;
+    urgencyTag.textContent = `${urgency.label}`;
+
+    mailItem.appendChild(mailText);
+    mailItem.appendChild(mailTag);
+    mailItem.appendChild(urgencyTag);
+
+    mailList.appendChild(mailItem);
+}
+
 async function callBackendApi() {
     await fetchAndDisplayMessageContent();
-    const response = await fetch(`http://127.0.0.1:8000${document.getElementById('urls').innerHTML}`, {
-        method:"POST", 
-        body:document.getElementById('content').innerHTML, 
-        headers:{
-            Authorization: `Bearer DMKxaBNdygM52ks4B5jQvfjhmpeRSsmd3_rhvT6dGGDJ-k4GeOPxFqN5ayZ_nogL7bsTQHB-czDQif77`,
-            "Content-Type": "application/json"
-        },
-    });
-    contentAPI.innerHTML = JSON.stringify(await response.json());
+
+    try {
+        const { apiToken } = await storageGet("apiToken");
+        if (!apiToken) {
+            alert("No API token saved. Please enter one in the popup.");
+            return;
+        }
+
+        const url = `http://127.0.0.1:8000${document.getElementById('urls').innerHTML}`;
+        const body = document.getElementById('content').innerHTML;
+
+        const response = await fetch(url, {
+            method: "POST",
+            body,
+            headers: {
+                Authorization: `Bearer ${apiToken}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        const json = await response.json();
+        contentAPI.innerHTML = JSON.stringify(json, null, 2);
+        renderMails(json);
+    } catch (e) {
+        contentAPI.innerHTML = `API error: ${e.message || String(e)}`;
+    }
 }
+
+
 
 // ---- Event Listeners ----
 document.addEventListener("DOMContentLoaded", loadSavedToken, {once: true});
